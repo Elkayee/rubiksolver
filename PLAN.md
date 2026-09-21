@@ -292,6 +292,52 @@ Hoàn thành khi:
 - Không có console error trong luồng MVP.
 - Manual smoke test toàn bộ happy path pass.
 
+### Phase 07 — Beginner Guided Mode
+
+Nguồn kịch bản chi tiết: `BEGINNER_GUIDE.md`.
+
+Thực hiện:
+
+- Thêm mode `Beginner Guide` tách với solver playback thông thường.
+- Tạo tutorial state machine theo 8 stage: Daisy -> White Cross -> White Layer -> Second Layer -> Yellow Cross -> Align Yellow Edges -> Position Yellow Corners -> Twist Final Corners.
+- Tự detect case hiện tại từ logical cube state.
+- Highlight piece/center cần nhìn trước khi xoay.
+- Tự định hướng camera về góc nhìn cần dạy mà không thay đổi cube state.
+- Reuse arrow, animation queue và speed control hiện có.
+- Dạy Righty, Lefty, Sune và Niklas từng move ở lần đầu.
+- Với algorithm lặp, hiển thị repeat counter.
+- Stage cuối khóa orientation; nếu cần quay đáy 180° thì Tutor phát `Down → Down`, không hiển thị `D2`.
+
+Hoàn thành khi:
+
+- Có thể bắt đầu từ một scramble hợp lệ bất kỳ.
+- Mỗi tutorial action chạy theo chu trình LOOK -> AIM -> TURN -> CHECK.
+- Người học luôn thấy piece đang xử lý, move hiện tại, chiều arrow và progress.
+- Không autoplay xuyên algorithm ở lần đầu học.
+- Pause/Repeat/Continue hoạt động mà không làm lệch logical state.
+- Guided flow đi hết tới solved state.
+- Nội dung và thứ tự dạy bám `BEGINNER_GUIDE.md`.
+
+### Phase 08 — CFOP cho chế độ giải thông thường
+
+Khi `Beginner Guide` không được chọn, solver phải dùng CFOP thật theo thứ tự:
+
+`Cross -> F2L 1-4 -> OLL -> PLL`
+
+- Bọc implementation CFOP sau `SolverAdapter`; UI không import package trực tiếp.
+- Chấp nhận mọi `CubeState` hợp lệ, kể cả state tạo bằng manual move hoặc color editor.
+- Chỉ trả các move outer-face mà move engine và renderer hiện hỗ trợ: `U D L R F B` cùng hậu tố `'`/`2`.
+- Giữ metadata ranh giới stage để UI có thể hiển thị Cross, F2L, OLL và PLL.
+- Chạy phép tìm lời giải ngoài main thread để không khóa animation/UI.
+- Beginner Guide tiếp tục dùng tutorial engine riêng và không đổi hành vi.
+
+Hoàn thành khi:
+
+- Normal mode giải một tập scramble deterministic qua đúng các stage CFOP và kết thúc solved.
+- Không có slice, wide move hoặc whole-cube rotation lọt vào animation queue.
+- Invalid cube bị từ chối trước khi gọi CFOP.
+- `npm test` và `npm run build` pass.
+
 ## 10. Tiêu chí nghiệm thu MVP
 
 MVP được coi là đạt khi có thể thực hiện end-to-end:

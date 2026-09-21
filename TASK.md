@@ -123,6 +123,92 @@ Trạng thái ban đầu: repository trống.
   - [x] Bỏ qua snapshot hỏng/không đúng schema an toàn.
   - Verify: reload khôi phục state và input đã làm dở.
 
+## P1 — Beginner Guided Mode
+
+Nguồn hành vi chi tiết: `BEGINNER_GUIDE.md`.
+
+- [x] Thêm switch/mode `Beginner Guide`.
+  - Verify: chuyển mode không thay đổi logical cube state.
+
+- [x] Tạo tutorial state machine 8 stage.
+  - [x] Daisy.
+  - [x] White Cross.
+  - [x] White Layer.
+  - [x] Second Layer.
+  - [x] Yellow Cross.
+  - [x] Align Yellow Edges.
+  - [x] Position Yellow Corners.
+  - [x] Twist Final Corners.
+  - Verify: stage detector chọn đúng stage từ state hiện tại.
+
+- [x] Tạo case detector cho từng stage.
+  - [x] Daisy side/front-bottom/bottom được phân biệt.
+  - [x] Second-layer RIGHT/LEFT/stuck được phân biệt.
+  - [x] Yellow-cross dot/L/line được phân biệt.
+  - [x] Yellow-edge opposite/adjacent được phân biệt.
+  - [x] Good-corner zero/one/all được phân biệt.
+
+- [x] Implement LOOK -> AIM -> TURN -> CHECK.
+  - Verify: trước mỗi move có highlight và explanation.
+  - Verify: camera cue không mutate cube state.
+  - Verify: TURN reuse animation queue hiện có.
+
+- [x] Teach Righty `R U R' U'` từng move.
+  - Verify: lần đầu không autoplay 4 move liền.
+  - Verify: repeat counter tăng khi corner cần nhiều Righty.
+
+- [x] Teach Lefty `L' U' L U` từng move.
+- [x] Teach Sune từng move; phần logic `U2` phải hiển thị thành `Up → Up`, không hiện `U2` trong Tutor.
+- [x] Teach Niklas `R U' L' U R' U' L U` từng move.
+
+- [x] Thêm Beginner HUD.
+  - [x] Stage.
+  - [x] Algorithm name.
+  - [x] Move current/total.
+  - [x] Double-turn presentation: lặp tên move, ví dụ `Right → Right`, không dùng `Right ×2`/`R2` trong Tutor.
+  - [x] Beginner instruction.
+  - [x] Arrow direction.
+  - [x] Current speed.
+
+- [x] Thêm Beginner controls.
+  - [x] Show next move.
+  - [x] Play this move.
+  - [x] Play algorithm.
+  - [x] Pause.
+  - [x] Repeat move.
+  - [x] Repeat algorithm.
+  - [x] Continue.
+  - [x] Reset camera.
+  - Verify: controls không bypass stage checks.
+
+- [x] Thêm beginner speed presets.
+  - [x] Slow 0.35×.
+  - [x] Normal 0.6×.
+  - [x] Fast 1×.
+  - Verify: chỉ đổi animation duration.
+
+- [x] Stage 8 orientation guard.
+  - Verify: whole-cube orientation được giữ cố định.
+  - Verify: sau khi một corner xong chỉ dùng D/D2 để đưa corner tiếp theo vào working position.
+  - Verify: cảnh báo “do not rotate the whole cube” luôn hiển thị trong stage này.
+
+- [x] End-to-end guided smoke test.
+  - Verify: một scramble seed cố định đi qua đủ stage và về SOLVED.
+  - Verify: pause/repeat giữa chừng không làm lệch state.
+
+## P1 — CFOP cho Normal mode
+
+- [x] Thay lời giải Kociemba trực tiếp của Normal mode bằng CFOP `Cross -> F2L -> OLL -> PLL`.
+  - [x] Bọc package CFOP sau `SolverAdapter` và giữ Kociemba chỉ để chuyển `CubeState` thành scramble tương đương.
+  - [x] Chạy CFOP trong Web Worker trên browser.
+  - [x] Chỉ cho phép output `U D L R F B` với quarter/half/inverse turns.
+  - [x] Trả metadata stage để Solution panel phân biệt Cross, F2L, OLL và PLL.
+  - Verify: apply toàn bộ solution vào input state trả về solved.
+  - Verify: stage order là Cross, F2L, OLL, PLL.
+  - Verify: manual/color-editor state hợp lệ vẫn giải được.
+  - Verify: Beginner Guide không đổi solver path.
+  - Verify: browser UI không bị khóa trong lúc CFOP đang tính.
+
 ## P2 — Chỉ làm khi có yêu cầu riêng
 
 - [ ] Drag trực tiếp sticker để xoay layer.
@@ -144,9 +230,21 @@ Một task chỉ đánh dấu hoàn tất khi:
 
 ## Verification evidence — 2026-09-20
 
-- `npm test` — 21 tests pass, including 100 deterministic scrambles, invalid corner/edge/parity states, session-storage round-trips, blocked-storage handling, motion timing, and arrow guidance.
-- `npm run build` — TypeScript check and Vite production build pass.
+- `npm test` — 14 test suites, 57 tests pass, bao gồm 100 deterministic scrambles, invalid corner/edge/parity states, session-storage round-trips, motion timing, arrow guidance, và beginner tutorial stage/case detection cùng move decomposition.
+- `npm run build` — TypeScript check và Vite production build pass (25 modules transformed).
+- Beginner Guided Mode verification:
+  - Tách đôi nước đi `X2` thành hai quarter-turn riêng biệt (ví dụ `Right → Right`), không hiển thị `R2` trong Tutor.
+  - Bộ State Machine 8 giai đoạn (`DAISY`, `WHITE_CROSS`, `WHITE_CORNERS`, `SECOND_LAYER`, `YELLOW_CROSS`, `ALIGN_YELLOW_EDGES`, `POSITION_YELLOW_CORNERS`, `TWIST_FINAL_CORNERS`, `SOLVED`) tự động nhận diện chính xác trạng thái từ `CubeState`.
+  - Case detector phân loại chính xác các trường hợp (Daisy side/bottom, L-shape/Line/Dot, Sune adjacent/opposite, Good corner one/zero).
+  - Tích hợp điều khiển Beginner Mode, HUD hướng dẫn song ngữ Việt - Anh, điều khiển tốc độ chuẩn (0.35×, 0.6×, 1×) và khóa góc nhìn cảnh báo Stage 8.
 - Browser smoke test — dev server, 3D render, `D` scramble, solve, autoplay to `SOLVED`, color-editor validation/reset, 375px viewport, and axe WCAG audit (0 violations).
 - Local persistence smoke test — scramble `R U`, reload, and recover `SCRAMBLED` state plus input text from `localStorage`.
 - Motion smoke test — `R2` reports `1/2` then `2/2`; arrow direction records `cw` and `ccw`; speed timing differs at 0.5×/2×; axe reports 0 violations.
 - Playback regression smoke test — with reduced-motion enabled, `Solve → Play` still records 9 visible animation durations (~188–192ms) and reaches `SOLVED` at `9/9`.
+
+## Verification evidence — 2026-09-21
+
+- CFOP dependency: `@moishy/cfop@0.4.0`, MIT, browser-compatible ESM; normal mode is fixed-orientation CFOP with Cross, F2L, OLL and PLL stage metadata.
+- `npm test` — 22 suites, 78 tests pass. CFOP regression verifies Cross/F2L/OLL/PLL invariants, five additional deterministic scrambles, outer-face-only output, input immutability, invalid-state rejection and final solved state.
+- `npm run build` — TypeScript and Vite production build pass; CFOP worker is emitted as a separate browser asset.
+- Browser smoke — checkbox remained unchecked, `Speedcubing · CFOP` was selected, worker returned a staged solution, skipped stages were shown explicitly, and a 20-move scramble that originally produced an unsupported `M` transition played all 66 translated moves to `SOLVED` (`66 / 66`) with no browser error.

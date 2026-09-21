@@ -6,10 +6,10 @@ const CUBIE_GAP = 1.06;
 export const BASE_ANIMATION_DURATION_MS = 850;
 export const REDUCED_MOTION_FACTOR = 0.35;
 const FACE_COLORS: Record<Face, number> = {
-  U: 0xf6f7f2,
+  U: 0xf2c94c,
   R: 0xe34b4b,
   F: 0x3dbb82,
-  D: 0xf2c94c,
+  D: 0xf6f7f2,
   L: 0xf2994a,
   B: 0x4f83cc,
 };
@@ -29,6 +29,24 @@ export const FACE_NAMES_VN: Record<Face, { vn: string; en: string }> = {
   F: { vn: 'Mặt Trước', en: 'Front' },
   B: { vn: 'Mặt Sau', en: 'Back' },
 };
+
+// Cấu hình camera tối ưu: lùi xa một chút để nhìn trọn vẹn Rubik và các mũi tên 3D
+export const CAU_HINH_CAMERA = {
+  fov: 40,
+  minDistance: 3.5,
+  maxDistance: 18,
+  viTriMacDinh: [5.8, 5.0, 6.6] as [number, number, number],
+  gocNhin: {
+    top: [4.4, 6.4, 5.4] as [number, number, number],
+    bottom: [4.4, -6.4, 5.4] as [number, number, number],
+    front: [2.0, 3.3, 8.2] as [number, number, number],
+    'front-right': [5.8, 4.9, 5.8] as [number, number, number],
+    'front-left': [-5.8, 4.9, 5.8] as [number, number, number],
+    'stage8-lock': [5.4, 4.5, 6.1] as [number, number, number],
+  } as Record<string, [number, number, number]>,
+};
+
+export const CAMERA_CONFIG = CAU_HINH_CAMERA;
 
 function faceletIndex(face: Face, x: number, y: number, z: number): number {
   let row: number;
@@ -125,9 +143,11 @@ export interface DinhHuongMuiTen3D {
   is_song_song: boolean;
 }
 
+export const HE_SO_KC_MUI_TEN = 2.25; // Hệ số khoảng cách mũi tên 3D cách xa tâm Rubik (tạo khoảng hở lớn với mặt Rubik)
+
 // Tinh toan toa do va goc quay 3D de mat mui ten song song 100% voi mat Rubik tuong ung
 export function layDinhHuongMuiTen3D(mat: Face): DinhHuongMuiTen3D {
-  const kc_tam = CUBIE_GAP * 1.58;
+  const kc_tam = CUBIE_GAP * HE_SO_KC_MUI_TEN;
   const normal = FACE_NORMALS[mat];
 
   let goc_quay: [number, number, number] = [0, 0, 0];
@@ -196,8 +216,8 @@ export class ModernCubeView {
   constructor(container: HTMLElement, state: CubeState) {
     this.container = container;
     this.scene.background = new THREE.Color(0x10151d);
-    this.camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
-    this.camera.position.set(4.7, 4.1, 5.4);
+    this.camera = new THREE.PerspectiveCamera(CAU_HINH_CAMERA.fov, 1, 0.1, 100);
+    this.camera.position.set(...CAU_HINH_CAMERA.viTriMacDinh);
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -251,8 +271,8 @@ export class ModernCubeView {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
     this.controls.enablePan = false;
-    this.controls.minDistance = 4.3;
-    this.controls.maxDistance = 8;
+    this.controls.minDistance = CAU_HINH_CAMERA.minDistance;
+    this.controls.maxDistance = CAU_HINH_CAMERA.maxDistance;
     this.scene.add(this.root);
     this.scene.add(new THREE.HemisphereLight(0xf7f5ef, 0x171b24, 2.2));
     const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
@@ -434,7 +454,7 @@ export class ModernCubeView {
     const camDir = this.camera.position.clone().normalize();
     const facingCamera = normal.dot(camDir) > -0.25;
 
-    const projected = normal.clone().multiplyScalar(CUBIE_GAP * 1.85).project(this.camera);
+    const projected = normal.clone().multiplyScalar(CUBIE_GAP * HE_SO_KC_MUI_TEN).project(this.camera);
     if (projected.z < -1 || projected.z > 1) {
       this.motionOverlay.hidden = true;
       return;
@@ -584,8 +604,15 @@ export class ModernCubeView {
     });
   }
 
+  setCameraPreset(preset: string): void {
+    const vi_tri = CAU_HINH_CAMERA.gocNhin[preset] || CAU_HINH_CAMERA.viTriMacDinh;
+    this.camera.position.set(...vi_tri);
+    this.controls.target.set(0, 0, 0);
+    this.controls.update();
+  }
+
   resetCamera(): void {
-    this.camera.position.set(4.7, 4.1, 5.4);
+    this.camera.position.set(...CAU_HINH_CAMERA.viTriMacDinh);
     this.controls.target.set(0, 0, 0);
     this.controls.update();
   }

@@ -6,6 +6,8 @@ Xây dựng Rubik Solver 3x3 3D theo `PLAN.md` và theo dõi tiến độ trong 
 
 Đọc `PLAN.md` khi cần quyết định phạm vi, kiến trúc hoặc tiêu chí nghiệm thu. Đọc `TASK.md` trước khi chọn việc tiếp theo hoặc đánh dấu hoàn thành.
 
+Khi làm Beginner Guided Mode, đọc `BEGINNER_GUIDE.md` trước khi sửa tutorial flow, case detection, beginner copy, camera cue hoặc algorithm teaching. File này là source of truth cho thứ tự dạy và hành vi tutorial.
+
 ## Core rule
 
 Logical cube state là source of truth. Three.js chỉ render/animate từ state này.
@@ -46,10 +48,22 @@ Motion contract:
 
 - Mỗi move render thành chuyển động layer nhìn thấy được.
 - Hiển thị rotation arrow cho face/layer và chiều xoay hiện tại.
-- Move `X2` phải biểu diễn được tiến độ `1/2` rồi `2/2`.
+- Solver UI có thể giữ notation `X2`, nhưng Beginner Tutor phải decompose double turn thành hai quarter-turn lặp, ví dụ `Right → Right`; không hiển thị `Right ×2`/`R2` cho người mới.
 - Speed control phải điều khiển duration thật của renderer đang active.
 - Manual move và solver playback dùng cùng animation path.
 - Arrow, progress label và speed là presentation state; chúng không được trở thành source of truth của cube.
+
+### tutorial/
+
+Beginner Guided Mode là orchestration layer, không phải solver thứ hai.
+
+- Tutorial đọc logical cube state để detect stage/case.
+- Tutorial tạo instruction, highlight, camera cue và danh sách move cần enqueue.
+- Mọi move vẫn đi qua move engine + animation queue hiện có.
+- Camera orientation là presentation state và không được mutate logical cube state.
+- Righty, Lefty, Sune và Niklas dùng đúng notation trong `BEGINNER_GUIDE.md`.
+- Lần đầu dạy một algorithm phải phát từng move; autoplay chỉ được mở sau khi người học đã xem algorithm đó ít nhất một lần.
+- Stage cuối giữ nguyên whole-cube orientation; nếu cần 180° ở đáy thì enqueue hai `D` liên tiếp và Tutor hiển thị `Down → Down`, không hiển thị `D2`.
 
 ### solver/
 

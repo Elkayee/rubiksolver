@@ -307,3 +307,283 @@ h2 { margin: 9px 0 0; color: var(--text); font-size: 18px; font-weight: 600; let
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
+
+/* ==============================================================================
+   Beginner Guided Mode & Mode Switch Bar
+   ============================================================================== */
+.mode-switch-bar {
+  display: flex;
+  gap: 8px;
+  background: var(--surface-soft);
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.mode-tab {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  transition: all 180ms ease;
+}
+.mode-tab:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+}
+.mode-tab.active {
+  background: var(--teal);
+  color: #061816;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(53, 197, 177, 0.35);
+}
+
+.solution-stage-label {
+  flex-basis: 100%;
+  margin: 8px 0 2px;
+  color: var(--orange);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.solution-stage-label:first-child { margin-top: 0; }
+
+/* Nút tick checkbox Chế độ giải cho người mới (Beginner Guide) ngay trên nút Solve */
+.solve-mode-selection {
+  margin: 14px 0 16px;
+  background: rgba(25, 33, 43, 0.85);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  transition: all 180ms ease;
+}
+.solve-mode-selection:hover,
+.solve-mode-selection:has(input:checked) {
+  border-color: var(--teal);
+  background: rgba(53, 197, 177, 0.1);
+  box-shadow: 0 0 14px rgba(53, 197, 177, 0.15);
+}
+.solve-mode-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+.solve-mode-checkbox-label input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+}
+.checkbox-box {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  border-radius: 6px;
+  border: 2px solid var(--border-strong);
+  background: var(--surface-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+  transition: all 180ms ease;
+}
+.solve-mode-checkbox-label:hover .checkbox-box {
+  border-color: var(--teal);
+}
+.solve-mode-checkbox-label input[type="checkbox"]:checked + .checkbox-box {
+  background: var(--teal);
+  border-color: var(--teal);
+  box-shadow: 0 0 10px rgba(53, 197, 177, 0.5);
+}
+.solve-mode-checkbox-label input[type="checkbox"]:checked + .checkbox-box::after {
+  content: "✓";
+  color: #061816;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1;
+}
+.checkbox-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.checkbox-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.solve-mode-checkbox-label input[type="checkbox"]:checked ~ .checkbox-text-group .checkbox-title {
+  color: var(--teal);
+}
+.checkbox-desc {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* Bảng hướng dẫn Beginner Guide độc lập bên ngoài khung cube */
+.beginner-guide-panel,
+.beginner-hud {
+  position: static;
+  border-left: 4px solid var(--teal);
+  background: linear-gradient(180deg, rgba(13, 22, 28, 0.95), rgba(16, 21, 29, 0.98));
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  padding: 16px 20px;
+  pointer-events: auto;
+  transition: opacity 200ms ease;
+}
+.beginner-guide-panel[hidden],
+.beginner-hud[hidden] {
+  display: none !important;
+}
+.beginner-panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.beginner-hud-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.badge-stage {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  background: var(--teal);
+  color: #051a17;
+  border-radius: 4px;
+  letter-spacing: 0.08em;
+}
+.beginner-hud-top h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+.beginner-hud-goal {
+  font-size: 13px;
+  color: var(--muted-strong);
+  margin-bottom: 8px;
+}
+.beginner-alg-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.badge-alg {
+  background: rgba(255, 147, 102, 0.15);
+  color: var(--orange);
+  border: 1px solid rgba(255, 147, 102, 0.4);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.badge-counter {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--teal);
+  background: rgba(53, 197, 177, 0.12);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.beginner-hud-instruction {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 6px;
+  padding: 8px 12px;
+}
+.inst-line-vn {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--teal);
+}
+.inst-line-en {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.beginner-warning {
+  margin-top: 8px;
+  background: rgba(255, 119, 109, 0.15);
+  border: 1px solid var(--red);
+  color: #ffb4af;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  animation: warning-pulse 1.5s infinite alternate ease-in-out;
+}
+@keyframes warning-pulse {
+  from { border-color: rgba(255, 119, 109, 0.4); }
+  to { border-color: rgba(255, 119, 109, 1); box-shadow: 0 0 10px rgba(255, 119, 109, 0.4); }
+}
+
+/* Tutor Step Card tích hợp trong Solution Panel */
+.tutor-step-card {
+  background: rgba(53, 197, 177, 0.09);
+  border: 1.5px solid var(--teal);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+.tutor-step-card[hidden] {
+  display: none !important;
+}
+.tutor-step-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tutor-step-header strong {
+  font-size: 14px;
+  color: var(--text);
+}
+.tutor-case-desc {
+  font-size: 12px;
+  color: var(--muted-strong);
+  line-height: 1.4;
+}
+.tutor-alg-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+.tutor-alg-moves {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--teal);
+  background: rgba(0, 0, 0, 0.35);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.tutor-advance-row {
+  margin-top: 10px;
+}
+.tutor-advance-row[hidden] {
+  display: none !important;
+}
+.full-width {
+  width: 100%;
+}

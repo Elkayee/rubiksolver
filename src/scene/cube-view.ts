@@ -4,10 +4,10 @@ import type { CubeState, Face, Move } from '../cube/types';
 
 // Bang mau chuan WCA cho 6 mat Rubik
 export const BANG_MAU: Record<Face, number> = {
-  U: 0xffffff, // Trang
+  U: 0xffd500, // Vang
   R: 0xc41e3a, // Do
   F: 0x009e60, // Xanh la
-  D: 0xffd500, // Vang
+  D: 0xffffff, // Trang
   L: 0xff5800, // Cam
   B: 0x0051ba, // Xanh duong
 };
@@ -65,7 +65,7 @@ export class CubeView {
     const rong = khung_chua.clientWidth || 600;
     const cao = khung_chua.clientHeight || 500;
     this.camera = new THREE.PerspectiveCamera(45, rong / cao, 0.1, 100);
-    this.camera.position.set(4.5, 4, 6);
+    this.camera.position.set(5.5, 5, 7.5);
 
     // Khoi tao renderer
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -78,7 +78,7 @@ export class CubeView {
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.05;
     this.controls.minDistance = 3;
-    this.controls.maxDistance = 15;
+    this.controls.maxDistance = 20;
 
     // Anh sang
     const anh_sang_mt = new THREE.AmbientLight(0xffffff, 0.85);

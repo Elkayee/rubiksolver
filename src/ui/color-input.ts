@@ -8,19 +8,19 @@ export interface ColorInputCallbacks {
 }
 
 const MAU_HEX: Record<Face, string> = {
-  U: '#ffffff',
+  U: '#ffd500',
   R: '#c41e3a',
   F: '#009e60',
-  D: '#ffd500',
+  D: '#ffffff',
   L: '#ff5800',
   B: '#0051ba',
 };
 
 const TEN_MAT: Record<Face, string> = {
-  U: 'Trắng (U)',
+  U: 'Vàng (U)',
   R: 'Đỏ (R)',
   F: 'Xanh lá (F)',
-  D: 'Vàng (D)',
+  D: 'Trắng (D)',
   L: 'Cam (L)',
   B: 'Xanh dương (B)',
 };

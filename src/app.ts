@@ -82,20 +82,11 @@ export class App {
   }
 
   // Thuc hien chuoi scramble
-  private async thucHienScramble(ds_buoc: Move[]): Promise<void> {
+  private thucHienScramble(ds_buoc: Move[]): void {
     this.dungTuChay();
-    this.controls.setDisabled(true);
-
-    for (const buoc of ds_buoc) {
-      this.trang_thai = applyMove(this.trang_thai, buoc);
-      await this.cube_view.quayMat(buoc);
-    }
-
+    this.trang_thai = applyMoves(createState(), ds_buoc);
     this.cube_view.capNhatTrangThai(this.trang_thai);
     this.color_input.dongBoTuState(this.trang_thai);
-    this.controls.setDisabled(false);
-
-    // Tu dong xoa loi giai cu neu co
     this.loi_giai = [];
     this.buoc_hien_tai = 0;
     this.solution_panel.setSolution([]);
